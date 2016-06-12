@@ -23,7 +23,6 @@
 
 /*
  * Note: You can change/add any functions in MP1Node.{h,cpp}
- * @author: Pranay Sarkar
  */
 
 /**
@@ -32,9 +31,8 @@
 enum MsgTypes{
     JOINREQ,
     JOINREP,
-    DUMMYLASTMSGTYPE,
-	HEARTBEATREQ,
-    HEARTBEATREP
+	HEARTBEAT,
+    DUMMYLASTMSGTYPE
 };
 
 /**
@@ -75,25 +73,33 @@ public:
 	bool recvCallBack(void *env, char *data, int size);
 	void nodeLoopOps();
 	int isNullAddress(Address *addr);
+	
 	Address getJoinAddress();
+	Address getNodeAddress(int id, short port); 
+	
 	void initMemberListTable(Member *memberNode);
+	
+	
+	bool isAddressEqualToNodeAddress(Address *address);
+    bool existsNodeInMemberListTable(int id);
+    MemberListEntry* getNodeInMemberListTable(int id);
+    void addNodeToMemberListTable(int id, short port, long heartbeat, long timestamp);
+    void removeNodeFromMemberListTable(int id, short port);
+    
+    void sendJOINREQMessage(Address *joinaddr);
+    void sendJOINREPMessage(Address *destinationAddr);
+    void sendHEARTBEATMessage(Address *destinationAddr);
+ 
+    void serializeMemberListTableForJOINREPMessageSending(MessageHdr *msg);
+    void deserializeMemberListTableForJOINREPMessageReceiving(char *data);
+	
+	
+	
+	
+	
+	
 	void printAddress(Address *addr);
 	virtual ~MP1Node();
-	
-	//Added by me
-	void updateMember(int id, short port, long heartbeat);
-	void updateMember(MemberListEntry& member);
-
-	bool recvJoinReq(void *env, char *data, int size);
-	bool recvJoinRep(void *env, char *data, int size);
-	bool recvHeartbeatReq(void *env, char *data, int size);
-	bool recvHeartbeatRep(void *env, char *data, int size);
-
-	bool recvMemberList(const char * label, void *env, char *data, int size);
-	void sendMemberList(const char * label, enum MsgTypes msgType, Address *to);
-
-	int memcpyMemberListEntry(char * data, MemberListEntry& member);
-	void logMemberListEntry(MemberListEntry& member);
 };
 
 #endif /* _MP1NODE_H_ */
